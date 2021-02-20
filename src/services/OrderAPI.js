@@ -1,7 +1,7 @@
 import  axios from 'axios'
 
 const apiClient = axios.create({
-    baseURL: 'http://openapi.clearspending.ru/restapi/v3/contracts/get/?regnum=0173100000414000011',
+    baseURL: 'https://damia.ru/api-zakupki/zakupka',
     headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json'
@@ -13,7 +13,7 @@ const apiClient = axios.create({
 
 export default {
 
-    getOrder() {
-        return apiClient.get()
+    getOrder(regn) {
+        return apiClient.get(`?regn=${regn}&key=b86c8cd8bffedc75ba2cf6c2e8439b48a590ca27`)
     }
 }
