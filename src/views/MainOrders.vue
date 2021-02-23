@@ -149,7 +149,7 @@ export default {
         .then((response) => {
           //this.$store.state.orderst[0][String(this.regn)] = response.data;
           this.Order = response;
-          //console.log(response.data);
+          console.log(response.data);
         })
         .catch((error) => {
           console.log("An Error", error.response);
@@ -161,12 +161,13 @@ export default {
           this.errors = 'Выберете критерий поиска в фильтре параметров'
         }
         else {
+          this.errors = ''
           this.Order = ''
       this.OrdersBySearch = Object.values(Object.values(this.$store.state.orders[0][44]) );
       OrderAPI.getOrdersBySearch(this.getParam())
         .then((response) => {
           //this.$store.state.orders = response.data;
-          //console.log(response.data);
+          console.log(response.data);
           this.orders = response.data; ////
         })
         .catch((error) => {
@@ -189,6 +190,6 @@ export default {
 <style scoped>
 .filter-text {
   font-size: 16px;
-  margin: 10;
+  margin: 10px;
 }
 </style>
