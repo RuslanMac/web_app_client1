@@ -1,63 +1,64 @@
 <template>
-  <v-container>
+  <v-container >
     <v-card>
-      <v-row class="cardInfo" >
+      <v-row>
         <v-col md="8">
-          <v-row> 
+          <v-row>
             <v-col>
               <label class="labelC">Номер ИНН:</label>
-              {{ order.orderNumber }}
+              {{ order.Заказчик.ИНН }}
             </v-col>
           </v-row>
           <v-row>
             <v-col>
               <label class="labelC">Наименование продукта:</label>
-              {{ order.productName }}
+              {{ order.Продукт.Название }}
             </v-col>
           </v-row>
           <v-row>
             <v-col>
               <label class="labelC">Заказчик:</label>
-              {{ order.productOwner }}
+              {{ order.Заказчик.НаимСокр }}
             </v-col>
           </v-row>
           <v-row>
             <v-col>
               <label class="labelC">Регион</label>
-              {{ order.region}}
+              {{ order.region }}
             </v-col>
           </v-row>
         </v-col>
+      
         <v-col md="4">
           <v-row>
             <v-col>
               <label class="mainInfo"></label>
-              {{ order.initialPrice }}
+              {{ order.Регион }}
             </v-col>
           </v-row>
           <v-row>
             <v-col>
               <label class="labelC">Дата публикации:</label>
-              {{ order.publicationDate }}
+              {{ order.ДатаПубл }}
             </v-col>
           </v-row>
           <v-row>
             <v-col>
-              <label> Дата начала:</label>
+              <label class="labelC"> Дата начала:</label>
               {{ order.startDate }}
             </v-col>
           </v-row>
           <v-row>
             <v-col>
-              <label> Дата завершения:</label>
+              <label class="labelC"> Дата завершения:</label>
               {{ order.sDate }}
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row class="mt-6">
         <v-col>
-          <v-btn color="green">
+          <v-btn color="green" to="/orderpage">
             Подробнее
           </v-btn>
         </v-col>
@@ -69,36 +70,19 @@
 <script>
 export default {
   data() {
-    return {
-     
-    };
+    return {};
   },
   props: {
-    order: {
-      
-        productName: "",
-        orderOwner: "",
-        orderNumber: 123,
-        publicationDate: "10-09-2019",
-        startDate: "11-09-2019",
-        sDate: "13-12-2019",
-        region: "Moscow", 
-         initialPrice: 12345
-    
-      
-      },
-  }
+    order: {},
+  },
 };
 </script>
 <style scoped>
 .labelC {
   font-size: 16px;
   font-style: initial;
+  font-weight: bold;
 }
-.mainText {
-  font-size: 20px;
-}
-.cardInfo {
-  border: 12px indigo;
-}
+
+
 </style>

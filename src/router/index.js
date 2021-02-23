@@ -22,7 +22,13 @@ const routes = [
     path: '/main-orders',
     name: 'MainOrders',
     component: () => import('../views/MainOrders.vue')
-  }
+  },
+  {
+    path: '/orderpage',
+    name: 'OrderPage',
+    component: () => import('../views/OrderPage.vue'),
+    props: true
+  } 
 ]
 
 const router = new VueRouter({

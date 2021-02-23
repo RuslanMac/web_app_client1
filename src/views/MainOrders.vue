@@ -1,26 +1,40 @@
 <template>
   <v-container>
+    <v-alert v-show="errors.length" colored-border
+       type="info">{{ errors }}</v-alert>
     <v-row>
       <v-col md="8">
         <v-row>
           <v-col md="6" offset="2">
             <BaseInput
-              label="Поиск заказов"
+              label="Поиск заказа"
               type="text"
               v-model="regn"
-              placeholder="Введите ключевое слово или словосочетание для поиска "
+              placeholder="Введите регистрационный номер"
             ></BaseInput>
-            <v-col md="2"><v-btn v-on:click="getOrder">Поиск</v-btn></v-col>
           </v-col>
+          <v-col md="2" style="margin-top:20px"
+            ><v-btn v-on:click="getOrder">Поиск</v-btn></v-col
+          >
         </v-row>
-        <v-row><h3>заказы</h3> </v-row>
+      
+        <v-row> <v-col><h3><u>Заказы</u></h3></v-col>
+         </v-row>
 
         <v-row>
-          <OrderInfoCard
-            v-for="order in Orders"
-            :key="order.orderNumber"
-            :order="order"
-          ></OrderInfoCard>
+          <div v-if="Order">
+            <OrderInfoCard
+              :key="Order.orderNumber"
+              :order="Order"
+            ></OrderInfoCard>
+          </div>
+          <div v-if="OrdersBySearch">
+            <OrderCardInfoSearch
+              v-for="order in OrdersBySearch"
+              :key="order"
+              :ordert="order"
+            ></OrderCardInfoSearch>
+          </div>
         </v-row>
       </v-col>
       <v-col md="4">
@@ -31,7 +45,7 @@
         <v-row>
           <v-col md="6">
             <BaseInput
-              v-model="from_date"
+              v-model="filter.from_date"
               type="date"
               label="Начало"
             ></BaseInput
@@ -39,17 +53,17 @@
           <v-col md="6"
             ><BaseInput
               type="date"
-              v-model="to_date"
+              v-model="filter.to_date"
               label="Оконачание поставки"
             ></BaseInput
           ></v-col>
         </v-row>
         <br />
-        <BaseSelect v-model="region" label="Регион"></BaseSelect>
-        <BaseInput v-model="okpd" label="ОКПД" type="text"></BaseInput>
-        Статус
+        <BaseSelect v-model="filter.region" label="Регион"></BaseSelect>
+        <BaseInput v-model="filter.okpd" label="ОКПД" type="text"></BaseInput>
+        <label>Статус </label>
         <v-container class="px-0" fluid>
-          <v-radio-group v-model="status">
+          <v-radio-group v-model="filter.status">
             <v-radio
               v-for="option in statusOptions"
               :key="option.value"
@@ -57,6 +71,7 @@
               :value="option.value"
             ></v-radio>
           </v-radio-group>
+          <v-btn v-on:click="getOrdersBySearch">Поиск заказов </v-btn>
         </v-container>
       </v-col>
     </v-row>
@@ -68,43 +83,107 @@ import BaseInput from "@/components/BaseInput.vue";
 import BaseSelect from "@/components/BaseSelect.vue";
 import OrderInfoCard from "@/components/OrderInfoCard.vue";
 import OrderAPI from "@/services/OrderAPI.js";
+import OrderCardInfoSearch from "@/components/OrderCardInfoSearch.vue";
 
 export default {
   data() {
     return {
-      from_date: "",
-      to_date: "",
-      region: "",
-      okpd: "",
-      status: "",
+      filter: {
+        from_date: "",
+        to_date: "",
+        okpd: "",
+        region: "",
+        status: "",
+      },
+
       statusOptions: [
         { label: "Подача заявок", value: 1 },
         { label: "Работа комиссии", value: 2 },
         { label: "Закупка завершена", value: 3 },
         { label: "Закупка отменена", value: 4 },
       ],
-      regn: " ",
+      regn: "0373200193019000001",
       KeyWords: "",
-      Orders: [
-      
-      ],
+      Order: '',
+      OrdersBySearch: [],
+      errors: '',
     };
   },
+  computed: {
+    getParam() {
+      var parametr = "";
+      for (var key in this.filter) {
+        if (this.filter[key] != "") {
+          parametr += key + "=" + this.filter[key] + "&";
+        }
+      }
+      return parametr.substring(0, parametr.length-1);
+    },
+    isInputFilter() {
+      for (var key in this.filter){
+        if (this.filter[key] != '') {
+          return false;
+        }
+  
+      }
+         return true;
+    },
+
+  },
+  
   components: {
     BaseInput,
     BaseSelect,
     OrderInfoCard,
+    OrderCardInfoSearch,
   },
   methods: {
-    getOrder() {
-      OrderAPI.getOrder().then((response) => {
-        console.log(response.data)
-
-      }).catch((error) => {
-        console.log("An Error", error.response)
-      });
-    }
-  }
+    getOrder: function() {
+      if (this.regn == '') {
+        this.errors = 'Пожалуйста, введете регистрационный номер заказа'
+      }
+      else {
+      this.OrdersBySearch = []
+      this.Order = this.$store.state.orderst[0][String(this.regn)];
+      OrderAPI.getOrder(this.regn)
+        .then((response) => {
+          //this.$store.state.orderst[0][String(this.regn)] = response.data;
+          this.Order = response;
+          //console.log(response.data);
+        })
+        .catch((error) => {
+          console.log("An Error", error.response);
+        });
+      }
+    },
+    getOrdersBySearch: function() {
+        if (this.isInputFilter ) {
+          this.errors = 'Выберете критерий поиска в фильтре параметров'
+        }
+        else {
+          this.Order = ''
+      this.OrdersBySearch = Object.values(Object.values(this.$store.state.orders[0][44]) );
+      OrderAPI.getOrdersBySearch(this.getParam())
+        .then((response) => {
+          //this.$store.state.orders = response.data;
+          //console.log(response.data);
+          this.orders = response.data; ////
+        })
+        .catch((error) => {
+          console.log("An Error", error.response);
+        });
+        }
+    },
+    
+    checkRegn: function() {
+      if (this.regn == "" || Object.values(this.filter).length == 0) {
+        this.errors = "Введите регистрационный номер"
+      } else {
+        this.errors= '';
+        this.getOrder();
+      }
+    },
+  },
 };
 </script>
 <style scoped>
